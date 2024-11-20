@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import * as authService from "../../services/v1/authService";
-import {AppError} from "../../middlewares/errorHandler";
+import { AppError } from "../../middlewares/errorHandler";
 
 /**
  * Registers a new user.
@@ -47,7 +47,6 @@ export const verify = async (req: Request, res: Response, next: NextFunction) =>
  * - Returns a success message if the OTP is successfully sent.
  * - Passes any encountered errors to the error-handling middleware.
  */
-
 export const resendOtp = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { email } = req.body;
@@ -93,16 +92,12 @@ export const refresh = async (req: Request, res: Response, next: NextFunction) =
     }
 
     try {
-        // Call the service to refresh the tokens
         const result = await authService.refreshTokens(refreshToken);
-
-        // Send the response with the refreshed tokens
         res.status(200).json({
             success: true,
             data: result
         });
     } catch (error) {
-        next(error); // Pass any encountered errors to the error-handling middleware
+        next(error);
     }
 };
-

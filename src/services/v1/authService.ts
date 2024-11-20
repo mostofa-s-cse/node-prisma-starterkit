@@ -1,8 +1,9 @@
+import { AppError } from "../../middlewares/errorHandler";
 import prisma from "../../config/database";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { AppError } from "../../middlewares/errorHandler";
-import {sendEmail} from "../../utils/email";
+import { sendEmail } from "../../utils/email";
+import { validateEmail } from "../../utils/emailValidation"; // Import validateEmail function
 
 /**
  * Register a new user.
@@ -11,6 +12,9 @@ import {sendEmail} from "../../utils/email";
  * - Sends an OTP for email verification.
  */
 export const registerUser = async (email: string, password: string, name: string) => {
+    // Validate email format before processing
+    validateEmail(email);
+
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
         throw new AppError("User already exists", 400);
@@ -22,13 +26,11 @@ export const registerUser = async (email: string, password: string, name: string
     });
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generate OTP
-    // Pass the name to the sendEmail function to personalize the email
-    await sendEmail(email, "Verify Your Email", name, otp); // Provide name here
+    await sendEmail(email, "Verify Your Email", name, otp); // Send OTP email
     await prisma.user.update({ where: { id: user.id }, data: { otp } });
 
     return { message: "User registered successfully. Please verify your email." };
 };
-
 
 /**
  * Verify the user's email using OTP.
@@ -36,6 +38,9 @@ export const registerUser = async (email: string, password: string, name: string
  * - Marks the email as verified.
  */
 export const verifyOtp = async (email: string, otp: string) => {
+    // Validate email format before processing
+    validateEmail(email);
+
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
         throw new AppError("User not found", 404);
@@ -57,6 +62,9 @@ export const verifyOtp = async (email: string, otp: string) => {
  * - Generates a new OTP and sends it via email.
  */
 export const resendOtp = async (email: string) => {
+    // Validate email format before processing
+    validateEmail(email);
+
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
         throw new AppError("User not found", 404);
@@ -70,8 +78,6 @@ export const resendOtp = async (email: string) => {
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generate new OTP
-
-    // Pass the user's name along with the OTP to the sendEmail function
     await sendEmail(email, "Verify Your Email", user.name, otp);
 
     await prisma.user.update({ where: { email }, data: { otp } });
@@ -79,14 +85,15 @@ export const resendOtp = async (email: string) => {
     return { message: "OTP sent successfully. Please check your email." };
 };
 
-
-
 /**
  * Login a user.
  * - Verifies credentials.
  * - Generates access and refresh tokens.
  */
 export const loginUser = async (email: string, password: string) => {
+    // Validate email format before processing
+    validateEmail(email);
+
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
         throw new AppError("Invalid email or password", 401);
@@ -100,7 +107,7 @@ export const loginUser = async (email: string, password: string) => {
         throw new AppError("Invalid email or password", 401);
     }
 
-    const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, { expiresIn: "15m" });
+    const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, { expiresIn: "60m" });
     const refreshToken = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET!, { expiresIn: "7d" });
 
     await prisma.user.update({ where: { id: user.id }, data: { refreshToken, } });

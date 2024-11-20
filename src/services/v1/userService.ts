@@ -1,5 +1,6 @@
 import { AppError } from "../../middlewares/errorHandler";
-import prisma from "../../config/database"; // Custom error handling
+import prisma from "../../config/database";
+import {validateEmail} from "../../utils/emailValidation"; // Custom error handling
 
 // Get all users
 export const getAllUsers = async () => {
@@ -17,11 +18,14 @@ export const getAllUsers = async () => {
 
 // Update user
 export const updateUser = async (id: string, data: { name?: string; email?: string }) => {
+    // Validate email format if email is provided
+    if (data.email) {
+        validateEmail(data.email);  // Assuming validateEmail throws an error if invalid
+    }
     const existingUser = await prisma.user.findUnique({ where: { id: parseInt(id) } });
     if (!existingUser) {
         throw new AppError("User not found", 404);
     }
-
     const updatedUser = await prisma.user.update({
         where: { id: parseInt(id) },
         data,

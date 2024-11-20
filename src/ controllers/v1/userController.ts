@@ -8,6 +8,7 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
         const users = await userService.getAllUsers();
         res.status(200).json({
             success: true,
+            message: "Data retrieved successfully",
             data: users,
         });
     } catch (error) {
