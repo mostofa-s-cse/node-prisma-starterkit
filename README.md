@@ -38,6 +38,7 @@ A Node.js server built using **Express.js**, **PostgreSQL**, and **Prisma ORM**,
 ### Installation
 
 1. Clone the repository HTTPS:
+
     ```
    git clone https://github.com/mostofa-s-cse/node-express-prisma-boilerplate.git
    ```
@@ -56,10 +57,12 @@ A Node.js server built using **Express.js**, **PostgreSQL**, and **Prisma ORM**,
    cd node-express-prisma-boilerplate
    ```
 - Git Branch Change
+
    ```
    git checkout database-postgresql
    ```
 2. Install dependencies:
+
    ```
     npm install
    ```
@@ -70,6 +73,7 @@ A Node.js server built using **Express.js**, **PostgreSQL**, and **Prisma ORM**,
 
 3. Set up environment variables
 - Create .env file
+
     ```bash
       SERVER_URL=http://localhost
       PORT=5000
@@ -82,7 +86,9 @@ A Node.js server built using **Express.js**, **PostgreSQL**, and **Prisma ORM**,
 Make sure you replace your_jwt_secret, your_refresh_token_secret, your_postgres_connection_url, and other placeholders with your actual values.
 
 4. Set up the PostgreSQL Database with Prisma
+
    1. Install the Prisma CLI:
+   
      ```
    npm install @prisma/cli
    ```
@@ -95,6 +101,7 @@ Make sure you replace your_jwt_secret, your_refresh_token_secret, your_postgres_
 This will create the database tables based on the Prisma schema.
 
 5. Run the Application
+
    ```bash
    npm run dev
    
@@ -187,4 +194,66 @@ Base URL: http://localhost:5000/api/v1
         "accessToken": "new_access_token_here",
         "refreshToken": "new_refresh_token_here"
     }
+   }
+
+
+6. User Management Endpoints
+- Get All Users
+- Endpoint: GET /users
+- Authorization: Bearer Token (Access Token)
+
+- Response:
+   ```json
+   {
+     "success": true,
+     "data": [
+      {
+        "id": 1,
+        "email": "user1@example.com",
+        "name": "User One"
+      },
+      {
+      "id": 2,
+      "email": "user2@example.com",
+      "name": "User Two"
+     }
+    ]
+   }
+
+7. Update User
+
+- Endpoint: PUT /users/:id
+- Authorization: Bearer Token (Access Token)
+
+- Request Body
+   ```json
+   {
+     "name": "Updated Name",
+     "email": "updated_email@example.com"
+   }
+
+- Response:
+   ```json
+   {
+    "success": true,
+    "message": "User updated successfully",
+    "data": {
+        "id": 3,
+        "email": "updated_email@example.com",
+        "name": "Updated Name",
+        "createdAt": "2024-11-19T18:18:22.157Z",
+        "updatedAt": "2024-11-20T16:41:52.917Z"
+       }
+     }
+
+8. Delete User
+
+- Endpoint: DELETE /users/:id
+- Authorization: Bearer Token (Access Token)
+
+- Response:
+   ```json
+   {
+    "success": true,
+    "message": "User deleted successfully"
    }
