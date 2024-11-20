@@ -12,6 +12,7 @@ A Node.js server built using **Express.js**, **PostgreSQL**, and **Prisma ORM**,
 - Scalable and modular MVC architecture
 - Error handling with centralized middleware
 - errorLogger
+- API Version control
 
 ---
 
@@ -36,14 +37,25 @@ A Node.js server built using **Express.js**, **PostgreSQL**, and **Prisma ORM**,
 
 ### Installation
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-repository.git
-   cd your-repository
+1. Clone the repository HTTPS:
+   >git clone https://github.com/mostofa-s-cse/node-express-prisma-boilerplate.git
 
+   >cd node-express-prisma-boilerplate
+
+- ### Or
+
+- Clone the repository SSH:
+
+  > git clone git@github.com:mostofa-s-cse/node-express-prisma-boilerplate.git
+
+  > cd node-express-prisma-boilerplate
+- Git Branch Change
+  > git checkout database-postgresql
+  
 2. Install dependencies:
-   ```bash
-   npm install or yarn install
+   >npm install 
+- ### or
+  > yarn install
 
 3. Set up environment variables
     ```bash
@@ -71,7 +83,8 @@ This will create the database tables based on the Prisma schema.
    npm run dev
    
 ## API Endpoints
-
+### Version 1
+Base URL: http://localhost:5000/api/v1
 1. Register a New User
 - Endpoint: POST /auth/register
 - Request Body:

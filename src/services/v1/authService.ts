@@ -1,8 +1,8 @@
-import prisma from "../config/database";
+import prisma from "../../config/database";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { AppError } from "../middlewares/errorHandler";
-import {sendEmail} from "../utils/email";
+import { AppError } from "../../middlewares/errorHandler";
+import {sendEmail} from "../../utils/email";
 
 /**
  * Register a new user.

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import * as authService from "../services/authService";
-import {AppError} from "../middlewares/errorHandler";
+import * as authService from "../../services/v1/authService";
+import {AppError} from "../../middlewares/errorHandler";
 
 /**
  * Registers a new user.

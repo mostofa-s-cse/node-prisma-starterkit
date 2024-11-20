@@ -1,5 +1,5 @@
-import { AppError } from "../middlewares/errorHandler";
-import prisma from "../config/database"; // Custom error handling
+import { AppError } from "../../middlewares/errorHandler";
+import prisma from "../../config/database"; // Custom error handling
 
 // Get all users
 export const getAllUsers = async () => {
