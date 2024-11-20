@@ -56,11 +56,7 @@ A Node.js server built using **Express.js**, **PostgreSQL**, and **Prisma ORM**,
    ```
    cd node-express-prisma-boilerplate
    ```
-- Git Branch Change
-
-   ```
-   git checkout database-postgresql
-   ```
+  
 2. Install dependencies:
 
    ```
