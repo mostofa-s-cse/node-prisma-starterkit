@@ -1,0 +1,35 @@
+### **2. .gitignore File**
+
+Here's a `.gitignore` file that you can use to ensure sensitive files and unnecessary dependencies aren't pushed to your Git repository:
+
+```gitignore
+# Node.js
+node_modules/
+
+# Environment variables
+.env
+
+# Prisma
+prisma/migrations/
+
+# Log files
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# npm package-lock and yarn.lock
+package-lock.json
+yarn.lock
+
+# IDE files
+.vscode/
+.idea/
+
+# Build files
+dist/
+build/
+
+# Temporary files
+*.tmp
