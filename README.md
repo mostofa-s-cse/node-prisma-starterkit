@@ -38,26 +38,38 @@ A Node.js server built using **Express.js**, **PostgreSQL**, and **Prisma ORM**,
 ### Installation
 
 1. Clone the repository HTTPS:
-   >git clone https://github.com/mostofa-s-cse/node-express-prisma-boilerplate.git
-
-   >cd node-express-prisma-boilerplate
-
+    ```
+   git clone https://github.com/mostofa-s-cse/node-express-prisma-boilerplate.git
+   ```
+   ```
+   cd node-express-prisma-boilerplate
+   ```
 - ### Or
 
 - Clone the repository SSH:
 
-  > git clone git@github.com:mostofa-s-cse/node-express-prisma-boilerplate.git
+  ```
+   git clone git@github.com:mostofa-s-cse/node-express-prisma-boilerplate.git
+   ```
 
-  > cd node-express-prisma-boilerplate
+   ```
+   cd node-express-prisma-boilerplate
+   ```
 - Git Branch Change
-  > git checkout database-postgresql
-  
+   ```
+   git checkout database-postgresql
+   ```
 2. Install dependencies:
-   >npm install 
+   ```
+    npm install
+   ```
 - ### or
-  > yarn install
+   ```
+   yarn install
+   ```
 
 3. Set up environment variables
+- Create .env file
     ```bash
       SERVER_URL=http://localhost
       PORT=5000
@@ -71,10 +83,14 @@ Make sure you replace your_jwt_secret, your_refresh_token_secret, your_postgres_
 
 4. Set up the PostgreSQL Database with Prisma
    1. Install the Prisma CLI:
-   >npm install @prisma/cli
+     ```
+   npm install @prisma/cli
+   ```
    
    2.Run Prisma migrations to create the database schema:
-   >npx prisma migrate dev --name init
+   ```
+    npx prisma migrate dev --name init
+   ```
 
 This will create the database tables based on the Prisma schema.
 
