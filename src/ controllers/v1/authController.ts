@@ -72,6 +72,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         const result = await authService.loginUser(email, password);
         res.status(200).json({
             success: true,
+            message: "Login successful. Welcome back!",
             data: result
         });
     } catch (error) {
@@ -99,5 +100,50 @@ export const refresh = async (req: Request, res: Response, next: NextFunction) =
         });
     } catch (error) {
         next(error);
+    }
+};
+
+
+/**
+ * Requests a password reset.
+ * - Accepts `email` in the request body.
+ * - Calls the authService to generate a reset token and sends it to the user's email.
+ * - Returns a success message upon successful request.
+ */
+export const requestPasswordReset = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { email } = req.body;
+
+        // Call the service to handle the password reset request
+        const result = await authService.requestPasswordReset(email);
+
+        res.status(200).json({
+            success: true,
+            message: result, // result is the success message returned from service
+        });
+    } catch (error) {
+        next(error); // Pass the error to the error handler middleware
+    }
+};
+
+/**
+ * Resets the password using the provided OTP.
+ * - Accepts `email`, `otp`, and `newPassword` in the request body.
+ * - Calls the authService to reset the user's password.
+ * - Returns a success message upon successful reset.
+ */
+export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { email, otp, newPassword } = req.body;
+
+        // Call the service to handle the password reset
+        const result = await authService.resetPassword(email, otp, newPassword);
+
+        res.status(200).json({
+            success: true,
+            message: result, // result is the success message returned from service
+        });
+    } catch (error) {
+        next(error); // Pass the error to the error handler middleware
     }
 };

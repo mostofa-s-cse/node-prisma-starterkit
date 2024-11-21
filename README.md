@@ -56,7 +56,7 @@ A Node.js server built using **Express.js**, **PostgreSQL**, and **Prisma ORM**,
    ```
    cd node-express-prisma-boilerplate
    ```
-  
+
 2. Install dependencies:
 
    ```
@@ -83,12 +83,12 @@ Make sure you replace your_jwt_secret, your_refresh_token_secret, your_postgres_
 
 4. Set up the PostgreSQL Database with Prisma
 
-   1. Install the Prisma CLI:
-   
+    1. Install the Prisma CLI:
+
      ```
    npm install @prisma/cli
    ```
-   
+
    2.Run Prisma migrations to create the database schema:
    ```
     npx prisma migrate dev --name init
@@ -96,11 +96,22 @@ Make sure you replace your_jwt_secret, your_refresh_token_secret, your_postgres_
 
 This will create the database tables based on the Prisma schema.
 
+- Supper Admin Seed
+  ```
+    npx prisma db seed
+   ```
+- Prisma Studio run
+  ```
+    npx prisma studio
+   ```
+  
+
+
 5. Run the Application
 
    ```bash
    npm run dev
-   
+
 ## API Endpoints
 ### Version 1
 Base URL: http://localhost:5000/api/v1
@@ -147,7 +158,7 @@ Base URL: http://localhost:5000/api/v1
    {
       "email": "user@example.com"
    }
-  
+
 - Response:
    ```json
    {
@@ -156,6 +167,42 @@ Base URL: http://localhost:5000/api/v1
         "message": "OTP sent successfully. Please check your email."
     }
    }
+
+
+4. Request Password Reset
+- Endpoint: POST /auth/request-password-reset
+- Request Body:
+
+   ```json
+   {
+      "email": "user@example.com"
+   }
+
+- Response:
+   ```json
+   {
+     "success": true,
+     "message": "Password reset OTP has been sent to your email. Please check your inbox."
+    }
+
+5. Reset Password
+- Endpoint: POST /auth/reset-password
+  - Request Body:
+
+     ```json
+     {
+      "email": "example@gmail.com",
+      "otp":"379913",
+      "newPassword": "password1234"
+     }
+
+- Response:
+   ```json
+   {
+    "success": true,
+    "message": "Your password has been reset successfully."
+    }
+
 
 4. User Login
 - Endpoint: POST /auth/login
@@ -169,6 +216,7 @@ Base URL: http://localhost:5000/api/v1
    ```json
    {
    "success": true,
+    message: "Login successful. Welcome back!",
     "data": { 
         "accessToken": "new_access_token_here",
         "refreshToken": "new_refresh_token_here"
@@ -201,19 +249,17 @@ Base URL: http://localhost:5000/api/v1
 - Response:
    ```json
    {
-     "success": true,
-     "data": [
-      {
-        "id": 1,
-        "email": "user1@example.com",
-        "name": "User One"
-      },
-      {
-      "id": 2,
-      "email": "user2@example.com",
-      "name": "User Two"
-     }
-    ]
+    "success": true,
+    "message": "Data retrieved successfully",
+    "data": [
+        {
+            "id": 1,
+            "email": "example@gmail.com",
+            "name": "example",
+            "createdAt": "2024-11-21T16:17:09.462Z",
+            "updatedAt": "2024-11-21T16:18:14.701Z"
+        }
+     ]
    }
 
 7. Update User

@@ -8,13 +8,15 @@ datasource db {
 }
 
 model User {
-  id            Int      @id @default(autoincrement())
-  name          String?
-  email         String   @unique
-  password      String
-  emailVerified Boolean  @default(false)
-  otp           String?
-  refreshToken  String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                        Int       @id @default(autoincrement())
+  name                      String?
+  email                     String    @unique
+  password                  String
+  emailVerified             Boolean   @default(false)
+  otp                       String?
+  refreshToken              String?
+  passwordResetToken        String? // Stores the hashed token
+  passwordResetTokenExpires DateTime? // Token expiration time
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
 }
