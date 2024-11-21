@@ -19,6 +19,7 @@ async function main() {
             refreshToken: "",  // You can leave this empty for now
             passwordResetToken: "",  // No password reset token for super admin
             passwordResetTokenExpires: null,  // No expiration needed
+            profileImage: null,  // No expiration needed
         },
     });
 

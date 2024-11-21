@@ -17,6 +17,7 @@ model User {
   refreshToken              String?
   passwordResetToken        String? // Stores the hashed token
   passwordResetTokenExpires DateTime? // Token expiration time
+  profileImage              String?
   createdAt                 DateTime  @default(now())
   updatedAt                 DateTime  @updatedAt
 }
