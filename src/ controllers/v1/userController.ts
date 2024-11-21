@@ -22,7 +22,13 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
         const { id } = req.params;
         const { name, email } = req.body;
 
-        const updatedUser = await userService.updateUser(id, { name, email });
+        // Handle optional profile image upload
+        let profileImage: string | undefined = undefined; // Initialize as undefined
+        if (req.file) {
+            profileImage = `/uploads/${req.file.filename}`;
+        }
+
+        const updatedUser = await userService.updateUser(id, { name, email, profileImage });
 
         res.status(200).json({
             success: true,
@@ -33,6 +39,7 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
         next(error);
     }
 };
+
 
 // Delete user
 export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
