@@ -5,23 +5,31 @@ import routes from "./routes";
 import { errorHandler } from "./middlewares/errorHandler";
 import errorLogger from "./middlewares/errorLogger";
 
+import cluster from "cluster";
+import os from "os";
+
+// Create Express app
 const app = express();
 
+// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
+// Define static folder for serving uploaded files (e.g., images)
+app.use("/uploads", express.static("uploads"));
+
 // Define a root route
 app.get("/", (req, res) => {
-    res.send("Welcome to the Node.js MVC Server!");
+    res.send(`Welcome to the Node.js MVC Server! PID: ${process.pid}`);
 });
 
-// Use the versioned routes
+// Versioned routes
 app.use("/api/v1", routes);
 
-// Use the error logger middleware
+// Error logging middleware
 app.use(errorLogger);
 
-// Use the error handler middleware
+// General error handler middleware
 app.use(errorHandler);
 
 export default app;
