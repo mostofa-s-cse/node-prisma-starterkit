@@ -12,7 +12,9 @@ A Node.js server built using **Express.js**, **PostgreSQL**, and **Prisma ORM**,
 - Scalable and modular MVC architecture
 - Error handling with centralized middleware
 - errorLogger
+- Image uploads use multer
 - API Version control
+- Cluster 
 
 ---
 
