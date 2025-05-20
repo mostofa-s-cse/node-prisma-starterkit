@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+import { addToEmailQueue } from '../services/emailQueueService';
 
 interface EmailOptions {
   email: string;
@@ -7,21 +7,10 @@ interface EmailOptions {
 }
 
 export const sendEmail = async (options: EmailOptions) => {
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT),
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
-
-  const mailOptions = {
-    from: process.env.SMTP_USER,
-    to: options.email,
-    subject: options.subject,
-    text: options.message,
-  };
-
-  await transporter.sendMail(mailOptions);
+  try {
+    await addToEmailQueue(options);
+  } catch (error) {
+    console.error('Failed to queue email:', error);
+    throw error;
+  }
 }; 
