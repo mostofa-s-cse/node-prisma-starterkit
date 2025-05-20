@@ -1,15 +1,17 @@
-import { createLogger, transports, format } from "winston";
+import fs from 'fs';
+import path from 'path';
 
-const logger = createLogger({
-    level: "error", // Only log errors
-    format: format.combine(
-        format.timestamp(),
-        format.json() // Log messages in JSON format
-    ),
-    transports: [
-        new transports.Console(), // Log to console
-        new transports.File({ filename: "error.log" }) // Log to a file
-    ],
-});
+const logDir = path.join(process.cwd(), 'logs');
 
-export default logger;
+// Ensure logs directory exists
+if (!fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir, { recursive: true });
+}
+
+export const logToFile = (service: string, message: string, error?: any) => {
+  const timestamp = new Date().toISOString();
+  const logFilePath = path.join(logDir, `${service}.log`);
+  const logMessage = `[${timestamp}] ${message}${error ? ` - Error: ${error.message}` : ''}\n`;
+  
+  fs.appendFileSync(logFilePath, logMessage);
+}; 
