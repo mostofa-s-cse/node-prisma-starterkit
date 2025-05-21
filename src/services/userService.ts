@@ -3,85 +3,263 @@ import { AppError } from '../middleware/errorHandler';
 import fs from 'fs';
 import path from 'path';
 import { logToFile } from '../utils/logger';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
-export const updateProfile = async (
-  userId: string,
-  data: {
-    firstName?: string;
-    lastName?: string;
-    profileImage?: string;
-  }
-) => {
+export const createUser = async (data: {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  roleId?: string;
+  profileImage?: string | null;
+}) => {
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
+    const { email, password, firstName, lastName, roleId, profileImage } = data;
+
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
     });
 
-    if (!user) {
-      logToFile('userService', `Update failed: User not found (ID: ${userId})`);
-      throw new AppError('User not found', 404);
+    if (existingUser) {
+      throw new AppError('Email already exists', 400);
     }
 
-    if (data.profileImage && user.profileImage) {
-      const oldImagePath = path.join(process.cwd(), user.profileImage);
-      if (fs.existsSync(oldImagePath)) {
-        fs.unlinkSync(oldImagePath);
-        logToFile('userService', `Deleted old profile image for user ${userId}`);
-      }
-    }
+    const hashedPassword = await bcrypt.hash(password, 12);
 
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
+    const user = await prisma.user.create({
       data: {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        profileImage: data.profileImage,
+        email,
+        password: hashedPassword,
+        firstName,
+        lastName,
+        profileImage: profileImage || null,
+        roles: roleId ? {
+          connect: { id: roleId }
+        } : undefined
       },
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        profileImage: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      include: {
+        roles: {
+          include: {
+            permissions: true
+          }
+        }
+      }
     });
 
-    logToFile('userService', `Profile updated successfully for user ID: ${userId}`);
-    return updatedUser;
-  } catch (error: any) {
-    logToFile('userService', `Update error for user ID: ${userId}`, error);
+    const { password: _, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  } catch (error) {
+    logToFile('userService', 'Error creating user', error);
     throw error;
   }
 };
 
-export const getProfile = async (userId: string) => {
+export const getAllUsers = async (page = 1, limit = 10) => {
+  try {
+    const skip = (page - 1) * limit;
+    
+    const [users, total] = await Promise.all([
+      prisma.user.findMany({
+        skip,
+        take: limit,
+        include: {
+          roles: {
+            include: {
+              permissions: true
+            }
+          }
+        },
+        orderBy: {
+          createdAt: 'desc'
+        }
+      }),
+      prisma.user.count()
+    ]);
+
+    const usersWithoutPasswords = users.map(({ password, ...user }) => user);
+
+    return {
+      users: usersWithoutPasswords,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit)
+    };
+  } catch (error) {
+    logToFile('userService', 'Error getting users', error);
+    throw error;
+  }
+};
+
+export const getUserById = async (id: string) => {
   try {
     const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        profileImage: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      where: { id },
+      include: {
+        roles: {
+          include: {
+            permissions: true
+          }
+        }
+      }
     });
 
     if (!user) {
-      logToFile('userService', `Get profile failed: User not found (ID: ${userId})`);
       throw new AppError('User not found', 404);
     }
 
-    logToFile('userService', `Profile retrieved for user ID: ${userId}`);
-    return user;
-  } catch (error: any) {
-    logToFile('userService', `Get profile error for user ID: ${userId}`, error);
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  } catch (error) {
+    logToFile('userService', `Error getting user ${id}`, error);
+    throw error;
+  }
+};
+
+export const searchUsers = async (query: string, page = 1, limit = 10) => {
+  try {
+    const skip = (page - 1) * limit;
+    
+    const [users, total] = await Promise.all([
+      prisma.user.findMany({
+        where: {
+          OR: [
+            { email: { contains: query } },
+            { firstName: { contains: query } },
+            { lastName: { contains: query } }
+          ]
+        },
+        skip,
+        take: limit,
+        include: {
+          roles: {
+            include: {
+              permissions: true
+            }
+          }
+        },
+        orderBy: {
+          createdAt: 'desc'
+        }
+      }),
+      prisma.user.count({
+        where: {
+          OR: [
+            { email: { contains: query } },
+            { firstName: { contains: query } },
+            { lastName: { contains: query } }
+          ]
+        }
+      })
+    ]);
+
+    const usersWithoutPasswords = users.map(({ password, ...user }) => user);
+
+    return {
+      users: usersWithoutPasswords,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit)
+    };
+  } catch (error) {
+    logToFile('userService', 'Error searching users', error);
+    throw error;
+  }
+};
+
+export const updateUser = async (
+  id: string,
+  data: {
+    email?: string;
+    password?: string;
+    firstName?: string;
+    lastName?: string;
+    roleId?: string;
+    profileImage?: string;
+  }
+) => {
+  try {
+    const { email, password, firstName, lastName, roleId, profileImage } = data;
+
+    const user = await prisma.user.findUnique({
+      where: { id }
+    });
+
+    if (!user) {
+      throw new AppError('User not found', 404);
+    }
+
+    if (email && email !== user.email) {
+      const existingUser = await prisma.user.findUnique({
+        where: { email }
+      });
+      if (existingUser) {
+        throw new AppError('Email already exists', 400);
+      }
+    }
+
+    // Delete old profile image if exists and new image is being uploaded
+    if (profileImage && user.profileImage) {
+      const oldImagePath = path.join(process.cwd(), user.profileImage);
+      if (fs.existsSync(oldImagePath)) {
+        fs.unlinkSync(oldImagePath);
+      }
+    }
+
+    const updateData: any = {};
+    if (email) updateData.email = email;
+    if (firstName) updateData.firstName = firstName;
+    if (lastName) updateData.lastName = lastName;
+    if (password) {
+      updateData.password = await bcrypt.hash(password, 12);
+    }
+    if (roleId) {
+      updateData.roles = {
+        connect: { id: roleId }
+      };
+    }
+    if (profileImage) {
+      updateData.profileImage = profileImage;
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: updateData,
+      include: {
+        roles: {
+          include: {
+            permissions: true
+          }
+        }
+      }
+    });
+
+    const { password: _, ...userWithoutPassword } = updatedUser;
+    return userWithoutPassword;
+  } catch (error) {
+    logToFile('userService', `Error updating user ${id}`, error);
+    throw error;
+  }
+};
+
+export const deleteUser = async (id: string) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id }
+    });
+
+    if (!user) {
+      throw new AppError('User not found', 404);
+    }
+
+    await prisma.user.delete({
+      where: { id }
+    });
+
+    return true;
+  } catch (error) {
+    logToFile('userService', `Error deleting user ${id}`, error);
     throw error;
   }
 }; 
