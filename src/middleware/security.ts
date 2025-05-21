@@ -88,7 +88,7 @@ export const configureSecurity = (app: Application) => {
   app.use(limiter);
   
   // Log security events
-  app.use((req, res, next) => {
+  app.use((req, _, next) => {
     logToFile('security', `Request: ${req.method} ${req.path} from IP: ${req.ip}`);
     next();
   });

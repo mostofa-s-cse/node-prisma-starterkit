@@ -18,9 +18,9 @@ export class AppError extends Error {
 
 export const errorHandler = (
   err: Error | AppError,
-  req: Request,
+  _: Request,
   res: Response,
-  next: NextFunction
+  __: NextFunction
 ) => {
   if (err instanceof AppError) {
     logToFile('errorHandler', `Operational Error: ${err.message}`, err);
