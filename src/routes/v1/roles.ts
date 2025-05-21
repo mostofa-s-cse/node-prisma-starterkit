@@ -14,7 +14,7 @@ const router = express.Router();
 router.use(protect);
 
 // Restrict to admin role
-router.use(restrictTo('admin'));
+// router.use(restrictTo('admin'));
 
 router.route('/')
   .post(createRoleController)

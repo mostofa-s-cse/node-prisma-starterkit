@@ -6,35 +6,40 @@ const prisma = new PrismaClient();
 
 export const createRole = async (data: {
   name: string;
-  description: string;
-  permissions: string[];
+  description?: string;
+  permissions?: string[];
 }) => {
-  const { name, description, permissions } = data;
+  try {
+    const { name, description, permissions = [] } = data;
 
-  const existingRole = await prisma.role.findUnique({
-    where: { name },
-  });
+    const existingRole = await prisma.role.findUnique({
+      where: { name },
+    });
 
-  if (existingRole) {
-    logToFile('roleService', `Role creation failed: Name already exists (${name})`);
-    throw new AppError('Role already exists', 400);
-  }
+    if (existingRole) {
+      logToFile('roleService', `Role creation failed: Name already exists (${name})`);
+      throw new AppError('Role already exists', 400);
+    }
 
-  const role = await prisma.role.create({
-    data: {
-      name,
-      description,
-      permissions: {
-        connect: permissions.map((id) => ({ id })),
+    const role = await prisma.role.create({
+      data: {
+        name,
+        description,
+        permissions: permissions.length > 0 ? {
+          connect: permissions.map((id) => ({ id })),
+        } : undefined,
       },
-    },
-    include: {
-      permissions: true,
-    },
-  });
+      include: {
+        permissions: true,
+      },
+    });
 
-  logToFile('roleService', `Role created successfully (ID: ${role.id})`);
-  return role;
+    logToFile('roleService', `Role created successfully (ID: ${role.id})`);
+    return role;
+  } catch (error) {
+    logToFile('roleService', 'Role creation error', error);
+    throw error;
+  }
 };
 
 export const getAllRoles = async () => {
@@ -71,38 +76,56 @@ export const getRoleById = async (id: string) => {
 export const updateRole = async (
   id: string,
   data: {
-    name: string;
-    description: string;
-    permissions: string[];
+    name?: string;
+    description?: string;
+    permissions?: string[];
   }
 ) => {
-  const { name, description, permissions } = data;
+  try {
+    const { name, description, permissions } = data;
 
-  const role = await prisma.role.findUnique({
-    where: { id },
-  });
+    const role = await prisma.role.findUnique({
+      where: { id },
+    });
 
-  if (!role) {
-    logToFile('roleService', `Role update failed: Role not found (ID: ${id})`);
-    throw new AppError('Role not found', 404);
-  }
+    if (!role) {
+      logToFile('roleService', `Role update failed: Role not found (ID: ${id})`);
+      throw new AppError('Role not found', 404);
+    }
 
-  const updatedRole = await prisma.role.update({
-    where: { id },
-    data: {
-      name,
-      description,
-      permissions: {
+    // Check if new name already exists for a different role
+    if (name && name !== role.name) {
+      const existingRole = await prisma.role.findUnique({
+        where: { name },
+      });
+      if (existingRole) {
+        throw new AppError('Role name already exists', 400);
+      }
+    }
+
+    const updateData: any = {};
+    if (name) updateData.name = name;
+    if (description) updateData.description = description;
+    if (permissions) {
+      updateData.permissions = {
         set: permissions.map((id) => ({ id })),
-      },
-    },
-    include: {
-      permissions: true,
-    },
-  });
+      };
+    }
 
-  logToFile('roleService', `Role updated successfully (ID: ${id})`);
-  return updatedRole;
+    const updatedRole = await prisma.role.update({
+      where: { id },
+      data: updateData,
+      include: {
+        permissions: true,
+      },
+    });
+
+    logToFile('roleService', `Role updated successfully (ID: ${id})`);
+    return updatedRole;
+  } catch (error) {
+    logToFile('roleService', `Role update error for ID: ${id}`, error);
+    throw error;
+  }
 };
 
 export const deleteRole = async (id: string) => {
