@@ -7,7 +7,7 @@ import {
   updateUserController,
   deleteUserController,
 } from '../../controllers/userController';
-import { protect, restrictTo } from '../../middleware/auth';
+import { protect } from '../../middleware/auth';
 import upload from '../../utils/multer';
 
 const router = express.Router();

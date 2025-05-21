@@ -27,7 +27,7 @@ export const createRoleController = async (
 };
 
 export const getRoles = async (
-  req: Request,
+  _: Request,
   res: Response,
   next: NextFunction
 ) => {

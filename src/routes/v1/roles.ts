@@ -7,7 +7,7 @@ import {
   deleteRoleController,
   assignPermissionsController,
 } from '../../controllers/roleController';
-import { protect, restrictTo } from '../../middleware/auth';
+import { protect } from '../../middleware/auth';
 
 const router = express.Router();
 

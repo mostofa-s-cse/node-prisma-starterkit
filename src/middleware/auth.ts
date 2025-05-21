@@ -20,7 +20,7 @@ declare global {
 
 export const protect = async (
   req: Request,
-  res: Response,
+  _: Response,
   next: NextFunction
 ) => {
   try {
@@ -77,7 +77,7 @@ export const protect = async (
 };
 
 export const restrictTo = (...roles: string[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, _: Response, next: NextFunction) => {
     if (!req.user) {
       return next(new AppError('User not authenticated', 401));
     }

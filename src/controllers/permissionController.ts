@@ -25,7 +25,7 @@ export const createPermissionController = async (
 };
 
 export const getPermissions = async (
-  req: Request,
+  _: Request,
   res: Response,
   next: NextFunction
 ) => {

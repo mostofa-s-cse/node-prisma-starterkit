@@ -1,9 +1,7 @@
 import app from './app';
-import { PrismaClient } from '@prisma/client';
 import cluster from 'cluster';
 import os from 'os';
 
-const prisma = new PrismaClient();
 const numCPUs = os.cpus().length;
 
 if (cluster.isPrimary) {
@@ -14,7 +12,7 @@ if (cluster.isPrimary) {
     cluster.fork();
   }
 
-  cluster.on('exit', (worker, code, signal) => {
+  cluster.on('exit', (worker) => {
     console.log(`Worker ${worker.process.pid} died`);
     // Replace the dead worker
     cluster.fork();

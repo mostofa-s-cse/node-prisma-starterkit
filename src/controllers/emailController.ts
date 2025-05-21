@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { getQueueStatus, getJobDetails, getAllJobs } from '../services/emailQueueService';
 
 export const getEmailQueueStatus = async (
-  req: Request,
+  _: Request,
   res: Response,
   next: NextFunction
 ) => {
@@ -35,7 +35,7 @@ export const getJobInfo = async (
 };
 
 export const getAllQueueJobs = async (
-  req: Request,
+  _: Request,
   res: Response,
   next: NextFunction
 ) => {
