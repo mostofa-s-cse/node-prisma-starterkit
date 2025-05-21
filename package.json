@@ -1,6 +1,6 @@
 {
   "name": "nodejs-api-starter",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "A modern Node.js API project with Redis caching, optional database support, and Docker containerization",
   "main": "dist/app.js",
   "types": "dist/app.d.ts",
@@ -8,7 +8,7 @@
     "build": "tsc",
     "start": "node dist/app.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "lint": "eslint . --ext .ts",
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run lint"
@@ -23,7 +23,10 @@
     "prisma",
     "authentication"
   ],
-  "author": "Your Name <your.email@example.com>",
+  "bin": {
+    "nodejs-api-starter": "bin/cli.js"
+  },
+  "author": "Md Mostofa Shahid , mostofa.s.cse@gmail.com",
   "license": "MIT",
   "dependencies": {
     "@prisma/client": "^5.0.0",
@@ -75,12 +78,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yourusername/nodejs-api-starter.git"
+    "url": "git+https://github.com/mostofa-s-cse/nodejs-api-starter.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/nodejs-api-starter/issues"
+    "url": "https://github.com/mostofa-s-cse/nodejs-api-starter/issues"
   },
-  "homepage": "https://github.com/yourusername/nodejs-api-starter#readme",
+  "homepage": "https://github.com/mostofa-s-cse/nodejs-api-starter#readme",
   "files": [
     "dist",
     "README.md",
