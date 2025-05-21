@@ -5,7 +5,9 @@ import {
   getRoleById,
   updateRole,
   deleteRole,
+  assignPermissionsToRole,
 } from '../services/roleService';
+import { AppError } from '../middleware/errorHandler';
 
 export const createRoleController = async (
   req: Request,
@@ -88,6 +90,30 @@ export const deleteRoleController = async (
     res.status(200).json({
       success: true,
       message: 'Role deleted successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const assignPermissionsController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { roleId } = req.params;
+    const { permissionIds } = req.body;
+
+    if (!Array.isArray(permissionIds)) {
+      throw new AppError('permissionIds must be an array', 400);
+    }
+
+    const updatedRole = await assignPermissionsToRole(roleId, permissionIds);
+    res.status(200).json({
+      success: true,
+      message: 'Permissions assigned successfully',
+      data: updatedRole
     });
   } catch (error) {
     next(error);

@@ -5,6 +5,7 @@ import {
   getRole,
   updateRoleController,
   deleteRoleController,
+  assignPermissionsController,
 } from '../../controllers/roleController';
 import { protect, restrictTo } from '../../middleware/auth';
 
@@ -24,5 +25,7 @@ router.route('/:id')
   .get(getRole)
   .patch(updateRoleController)
   .delete(deleteRoleController);
+
+router.post('/:roleId/permissions', assignPermissionsController);
 
 export default router; 

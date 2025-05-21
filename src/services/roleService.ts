@@ -149,4 +149,35 @@ export const deleteRole = async (id: string) => {
     logToFile('roleService', 'Role deletion error', error);
     throw error;
   }
+};
+
+export const assignPermissionsToRole = async (roleId: string, permissionIds: string[]) => {
+  try {
+    const role = await prisma.role.findUnique({
+      where: { id: roleId },
+      include: { permissions: true }
+    });
+
+    if (!role) {
+      throw new AppError('Role not found', 404);
+    }
+
+    const updatedRole = await prisma.role.update({
+      where: { id: roleId },
+      data: {
+        permissions: {
+          connect: permissionIds.map(id => ({ id }))
+        }
+      },
+      include: {
+        permissions: true
+      }
+    });
+
+    logToFile('roleService', `Permissions assigned to role ${roleId} successfully`);
+    return updatedRole;
+  } catch (error) {
+    logToFile('roleService', `Error assigning permissions to role ${roleId}`, error);
+    throw error;
+  }
 }; 
