@@ -1,35 +1,45 @@
-import express from "express";
-import bodyParser from "body-parser";
-import cors from "cors";
-import routes from "./routes";
-import { errorHandler } from "./middlewares/errorHandler";
-import errorLogger from "./middlewares/errorLogger";
+import express, { Application } from 'express';
+import passport from 'passport';
+import { errorHandler } from './middleware/errorHandler';
+import { configureSecurity, loginLimiter } from './middleware/security';
+import { configureCompression } from './middleware/compression';
+import v1Routes from './routes/v1';
+import { logToFile } from './utils/logger';
 
-import cluster from "cluster";
-import os from "os";
+const app: Application = express();
 
-// Create Express app
-const app = express();
+// Configure security middleware
+configureSecurity(app);
 
-// Middleware
-app.use(cors());
-app.use(bodyParser.json());
+// Configure compression
+configureCompression(app);
 
-// Define static folder for serving uploaded files (e.g., images)
-app.use("/uploads", express.static("uploads"));
+// Body parsing middleware
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
-// Define a root route
-app.get("/", (req, res) => {
-    res.send(`Welcome to the Node.js MVC Server! PID: ${process.pid}`);
+// Passport middleware
+app.use(passport.initialize());
+
+// API routes
+app.use('/api/v1', v1Routes);
+
+// Apply login limiter to auth routes
+app.use('/api/v1/auth/login', loginLimiter);
+app.use('/api/v1/auth/register', loginLimiter);
+
+// Error handling middleware
+app.use(errorHandler);
+
+// Log unhandled errors
+process.on('unhandledRejection', (err: Error) => {
+  logToFile('app', 'Unhandled Rejection', err);
+  process.exit(1);
 });
 
-// Versioned routes
-app.use("/api/v1", routes);
-
-// Error logging middleware
-app.use(errorLogger);
-
-// General error handler middleware
-app.use(errorHandler);
+process.on('uncaughtException', (err: Error) => {
+  logToFile('app', 'Uncaught Exception', err);
+  process.exit(1);
+});
 
 export default app;

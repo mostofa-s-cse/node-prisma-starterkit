@@ -1,303 +1,362 @@
-# Node.js Authentication API
+# Node.js API Project
 
-A Node.js server built using **Express.js**, **PostgreSQL**, and **Prisma ORM**, following the **MVC architecture**. This project includes user authentication with **email verification**, **OTP**, **JWT access tokens**, and **refresh tokens**, along with robust error handling.
+A modern Node.js API project with Redis caching, optional database support, and Docker containerization.
 
 ## Features
 
-- User Registration with OTP email verification
-- Secure Login with hashed passwords
-- Token-based authentication (Access and Refresh tokens)
-- Resend OTP functionality
-- Middleware for route protection
-- Scalable and modular MVC architecture
-- Error handling with centralized middleware
-- errorLogger
-- Image uploads use multer
-- API Version control
-- Cluster 
-
----
+- 🚀 Fast and scalable Node.js API
+- 🔄 Redis caching for improved performance
+- 🐳 Docker containerization
+- 📦 Database support (MySQL/PostgreSQL)
+- 🔒 Secure authentication
+- 📝 API documentation
+- 📊 Logging system
+- 🔍 Request caching middleware
+- 📤 File upload support
 
 ## Technologies Used
 
-- **Node.js**: JavaScript runtime
-- **Express.js**: Web framework
-- **Prisma ORM**: Database access
-- **PostgreSQL**: Database
-- **JWT**: Token-based authentication
-- **Nodemailer**: Email services
-- **bcrypt**: Password hashing
+- **Backend Framework**: Node.js
+- **Runtime**: Node.js 18 (LTS)
+- **Caching**: Redis
+- **Database Options**: 
+  - MySQL 8.0
+  - PostgreSQL 14
+- **Containerization**: Docker & Docker Compose
+- **Package Manager**: npm
+- **Type Checking**: TypeScript
+- **ORM**: Prisma
 
----
+## Prerequisites
 
-## Getting Started
+- Docker and Docker Compose
+- Node.js 18 or higher
+- npm or yarn
+- Git
 
-### Prerequisites
+## Installation
 
-- Node.js (v14 or above)
-- PostgreSQL installed and running
+### Using npm
 
-### Installation
+```bash
+npm install nodejs-api-starter
+```
 
-1. Clone the repository HTTPS:
+### Using yarn
 
-    ```
-   git clone https://github.com/mostofa-s-cse/node-express-prisma-boilerplate.git
-   ```
-   ```
-   cd node-express-prisma-boilerplate
-   ```
-- ### Or
+```bash
+yarn add nodejs-api-starter
+```
 
-- Clone the repository SSH:
+### Using pnpm
 
-  ```
-   git clone git@github.com:mostofa-s-cse/node-express-prisma-boilerplate.git
-   ```
+```bash
+pnpm add nodejs-api-starter
+```
 
-   ```
-   cd node-express-prisma-boilerplate
-   ```
+## Quick Start
+
+```typescript
+import { createApp } from 'nodejs-api-starter';
+
+const app = createApp({
+  port: 3000,
+  redis: {
+    url: 'redis://localhost:6379'
+  },
+  database: {
+    url: 'postgresql://user:password@localhost:5432/dbname'
+  },
+  jwt: {
+    secret: 'your-secret-key',
+    expiresIn: '24h'
+  }
+});
+
+app.start();
+```
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd <project-directory>
+```
 
 2. Install dependencies:
+```bash
+npm install
+```
 
-   ```
-    npm install
-   ```
-- ### or
-   ```
-   yarn install
-   ```
+3. Configure environment variables:
+   - Copy `.env.example` to `.env`
+   - Update the environment variables as needed
 
-3. Set up environment variables
-- Create .env file
+4. Start the application:
 
-    ```bash
-      SERVER_URL=http://localhost
-      PORT=5000
-      DATABASE_URL=postgresql://root:password@localhost:5432
-      JWT_SECRET=
-      JWT_REFRESH_SECRET=
-      EMAIL_USER=demo@gmail.com
-      EMAIL_PASSWORD=cxbdtxtqkbdbkjkw
+Using Docker (recommended):
+```bash
+docker-compose up
+```
 
-Make sure you replace your_jwt_secret, your_refresh_token_secret, your_postgres_connection_url, and other placeholders with your actual values.
-
-4. Set up the PostgreSQL Database with Prisma
-
-    1. Install the Prisma CLI:
-
-     ```
-   npm install @prisma/cli
-   ```
-
-   2.Run Prisma migrations to create the database schema:
-   ```
-    npx prisma migrate dev --name init
-   ```
-
-This will create the database tables based on the Prisma schema.
-
-- Supper Admin Seed
-  ```
-    npx prisma db seed
-   ```
-- Prisma Studio run
-  ```
-    npx prisma studio
-   ```
-  
-
-
-5. Run the Application
-
-   ```bash
-   npm run dev
+Without Docker:
+```bash
+npm run dev
+```
 
 ## API Endpoints
-### Version 1
-Base URL: http://localhost:5000/api/v1
-1. Register a New User
-- Endpoint: POST /auth/register
-- Request Body:
 
-   ```json
-   {
-    "name":"example",
-    "email": "example@gmail.com",
-    "password": "password123"
-   }
-- Response:
-   ```json
-   {
-    "success": true,
-    "data": {
-        "message": "User registered successfully. Please verify your email."
-    }
+### Authentication
 
+#### Register User
+```http
+POST /api/auth/register
+Content-Type: application/json
 
-2. Verify User Email
-- Endpoint: POST /auth/verify
-- Request Body:
+{
+  "email": "user@example.com",
+  "password": "password123",
+  "name": "John Doe"
+}
+```
 
-   ```json
-   {
+Response:
+```json
+{
+  "success": true,
+  "data": {
+    "id": "user_id",
+    "email": "user@example.com",
+    "name": "John Doe",
+    "token": "jwt_token"
+  }
+}
+```
+
+#### Login
+```http
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+Response:
+```json
+{
+  "success": true,
+  "data": {
+    "token": "jwt_token",
+    "user": {
+      "id": "user_id",
       "email": "user@example.com",
-      "otp":"254627"
-   }
-- Response:
-   ```json
-   {
-      "success": true,
-      "message": "Email verified successfully."
-   }
-
-3. Resend OTP
-- Endpoint: POST /auth/resend-otp
-- Request Body:
-
-   ```json
-   {
-      "email": "user@example.com"
-   }
-
-- Response:
-   ```json
-   {
-    "success": true,
-    "data": {
-        "message": "OTP sent successfully. Please check your email."
+      "name": "John Doe"
     }
-   }
+  }
+}
+```
 
+### User Profile
 
-4. Request Password Reset
-- Endpoint: POST /auth/request-password-reset
-- Request Body:
+#### Get Profile
+```http
+GET /api/profile
+Authorization: Bearer <token>
+```
 
-   ```json
-   {
-      "email": "user@example.com"
-   }
+Response:
+```json
+{
+  "success": true,
+  "data": {
+    "id": "user_id",
+    "email": "user@example.com",
+    "name": "John Doe",
+    "profileImage": "url_to_image"
+  }
+}
+```
 
-- Response:
-   ```json
-   {
-     "success": true,
-     "message": "Password reset OTP has been sent to your email. Please check your inbox."
-    }
+#### Update Profile
+```http
+PUT /api/profile
+Authorization: Bearer <token>
+Content-Type: application/json
 
-5. Reset Password
-- Endpoint: POST /auth/reset-password
-  - Request Body:
+{
+  "name": "Updated Name",
+  "bio": "User bio"
+}
+```
 
-     ```json
-     {
-      "email": "example@gmail.com",
-      "otp":"379913",
-      "newPassword": "password1234"
-     }
+Response:
+```json
+{
+  "success": true,
+  "data": {
+    "id": "user_id",
+    "name": "Updated Name",
+    "bio": "User bio",
+    "email": "user@example.com"
+  }
+}
+```
 
-- Response:
-   ```json
-   {
-    "success": true,
-    "message": "Your password has been reset successfully."
-    }
+## Environment Variables
 
+Create a `.env` file in the root directory with the following variables:
 
-4. User Login
-- Endpoint: POST /auth/login
-- Request Body
-   ```json
-   {
-      "email": "user@example.com",
-      "password": "password123"
-   }
-- Response:
-   ```json
-   {
-   "success": true,
-    message: "Login successful. Welcome back!",
-    "data": { 
-        "accessToken": "new_access_token_here",
-        "refreshToken": "new_refresh_token_here"
-    }
-   }
+```env
+# Application
+NODE_ENV=development
+PORT=3000
 
-5. Refresh Token
-- Endpoint: POST /auth/refresh
-- Request Body
-   ```json
-   {
-       "refreshToken": "your_refresh_token_here"
-   }
-- Response:
-   ```json
-   {
-    "success": true,
-    "data": {
-        "accessToken": "new_access_token_here",
-        "refreshToken": "new_refresh_token_here"
-    }
-   }
+# Redis
+REDIS_URL=redis://redis:6379
 
+# Database (Choose one)
+DATABASE_URL=postgresql://user:password@postgres:5432/dbname
+# or
+DATABASE_URL=mysql://user:password@mysql:3306/dbname
 
-6. User Management Endpoints
-- Get All Users
-- Endpoint: GET /users
-- Authorization: Bearer Token (Access Token)
+# JWT
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRES_IN=24h
+```
 
-- Response:
-   ```json
-   {
-    "success": true,
-    "message": "Data retrieved successfully",
-    "data": [
-        {
-            "id": 1,
-            "email": "example@gmail.com",
-            "name": "example",
-            "createdAt": "2024-11-21T16:17:09.462Z",
-            "updatedAt": "2024-11-21T16:18:14.701Z"
-        }
-     ]
-   }
+## Docker Configuration
 
-7. Update User
+The project includes Docker configuration for easy deployment:
 
-- Endpoint: PUT /users/:id
-- Authorization: Bearer Token (Access Token)
+- `Dockerfile`: Main application container
+- `docker-compose.yml`: Multi-container setup
+- `redis.conf`: Redis configuration
 
-- Request Body
-   ```json
-   {
-     "name": "Updated Name",
-     "email": "updated_email@example.com"
-   }
+To start all services:
+```bash
+docker-compose up
+```
 
-- Response:
-   ```json
-   {
-    "success": true,
-    "message": "User updated successfully",
-    "data": {
-        "id": 3,
-        "email": "updated_email@example.com",
-        "name": "Updated Name",
-        "createdAt": "2024-11-19T18:18:22.157Z",
-        "updatedAt": "2024-11-20T16:41:52.917Z"
-       }
-     }
+To stop all services:
+```bash
+docker-compose down
+```
 
-8. Delete User
+## Development
 
-- Endpoint: DELETE /users/:id
-- Authorization: Bearer Token (Access Token)
+### Available Scripts
 
-- Response:
-   ```json
-   {
-    "success": true,
-    "message": "User deleted successfully"
-   }
+- `npm run dev`: Start development server
+- `npm run build`: Build the application
+- `npm start`: Start production server
+- `npm run test`: Run tests
+- `npm run lint`: Run linter
+
+### Code Structure
+
+```
+src/
+├── controllers/    # Route controllers
+├── middleware/     # Custom middleware
+├── models/        # Data models
+├── routes/        # API routes
+├── services/      # Business logic
+├── utils/         # Utility functions
+└── app.ts         # Application entry point
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## NPM Package Usage
+
+### Configuration Options
+
+The package accepts the following configuration options:
+
+```typescript
+interface Config {
+  port?: number;              // Default: 3000
+  redis?: {
+    url: string;             // Redis connection URL
+    password?: string;       // Redis password
+  };
+  database?: {
+    url: string;             // Database connection URL
+    type?: 'postgresql' | 'mysql'; // Database type
+  };
+  jwt?: {
+    secret: string;          // JWT secret key
+    expiresIn?: string;      // Token expiration time
+  };
+  cors?: {
+    origin?: string | string[]; // CORS origin
+    credentials?: boolean;    // Allow credentials
+  };
+}
+```
+
+### Available Methods
+
+```typescript
+// Start the server
+app.start();
+
+// Stop the server
+app.stop();
+
+// Get Express app instance
+const expressApp = app.getExpressApp();
+
+// Get Redis client
+const redisClient = app.getRedisClient();
+
+// Get Database client
+const dbClient = app.getDatabaseClient();
+```
+
+### Example with Custom Configuration
+
+```typescript
+import { createApp } from 'nodejs-api-starter';
+
+const app = createApp({
+  port: 4000,
+  redis: {
+    url: 'redis://localhost:6379',
+    password: 'your-redis-password'
+  },
+  database: {
+    url: 'postgresql://user:password@localhost:5432/dbname',
+    type: 'postgresql'
+  },
+  jwt: {
+    secret: 'your-secret-key',
+    expiresIn: '7d'
+  },
+  cors: {
+    origin: ['http://localhost:3000', 'https://yourdomain.com'],
+    credentials: true
+  }
+});
+
+// Add custom middleware
+app.getExpressApp().use((req, res, next) => {
+  console.log('Custom middleware');
+  next();
+});
+
+// Start the server
+app.start();
+``` 

@@ -1,35 +1,82 @@
-import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
-    // Hash a password for the super admin user
-    const superAdminPassword = "superadmin123"; // You can change this password
-    const hashedPassword = await bcrypt.hash(superAdminPassword, 10);
+  // Create permissions
+  const permissions = [
+    { name: 'user:read', description: 'Can read user data' },
+    { name: 'user:write', description: 'Can modify user data' },
+    { name: 'user:delete', description: 'Can delete users' },
+    { name: 'role:read', description: 'Can read roles' },
+    { name: 'role:write', description: 'Can modify roles' },
+    { name: 'role:delete', description: 'Can delete roles' },
+    { name: 'permission:read', description: 'Can read permissions' },
+    { name: 'permission:write', description: 'Can modify permissions' },
+    { name: 'permission:delete', description: 'Can delete permissions' },
+  ];
 
-    // Create a super admin user
-    const superAdmin = await prisma.user.create({
-        data: {
-            name: "Super Admin",    // Super Admin Name
-            email: "superadmin@example.com",  // Super Admin Email (unique)
-            password: hashedPassword,  // Hashed Password
-            emailVerified: true,  // Email is verified for admin
-            otp: null,  // No OTP required for admin
-            refreshToken: "",  // You can leave this empty for now
-            passwordResetToken: "",  // No password reset token for super admin
-            passwordResetTokenExpires: null,  // No expiration needed
-            profileImage: null,  // No expiration needed
-        },
+  console.log('Creating permissions...');
+  for (const permission of permissions) {
+    await prisma.permission.upsert({
+      where: { name: permission.name },
+      update: {},
+      create: permission,
     });
+  }
 
-    console.log("Super admin user created:", superAdmin);
+  // Create super admin role
+  console.log('Creating super admin role...');
+  const superAdminRole = await prisma.role.upsert({
+    where: { name: 'super_admin' },
+    update: {},
+    create: {
+      name: 'super_admin',
+      description: 'Super Administrator with all permissions',
+    },
+  });
+
+  // Assign all permissions to super admin role
+  console.log('Assigning permissions to super admin role...');
+  const allPermissions = await prisma.permission.findMany();
+  await prisma.role.update({
+    where: { id: superAdminRole.id },
+    data: {
+      permissions: {
+        connect: allPermissions.map(permission => ({ id: permission.id })),
+      },
+    },
+  });
+
+  // Create super admin user
+  console.log('Creating super admin user...');
+  const hashedPassword = await bcrypt.hash('password123', 12);
+  await prisma.user.upsert({
+    where: { email: 'superadmin@example.com' },
+    update: {},
+    create: {
+      email: 'superadmin@example.com',
+      password: hashedPassword,
+      firstName: 'Super',
+      lastName: 'Admin',
+      isVerified: true,
+      otp: null,
+      otpExpiry: null,
+      roles: {
+        connect: { id: superAdminRole.id },
+      },
+    },
+  });
+
+  console.log('Seeding completed successfully!');
 }
 
 main()
-    .catch((e) => {
-        throw e;
-    })
-    .finally(async () => {
-        await prisma.$disconnect();
-    });
+  .catch((e) => {
+    console.error('Error during seeding:', e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  }); 

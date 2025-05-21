@@ -1,0 +1,46 @@
+# Source files
+src/
+tests/
+__tests__/
+*.test.ts
+*.spec.ts
+
+# Development files
+.git/
+.github/
+.gitignore
+.editorconfig
+.eslintrc
+.prettierrc
+jest.config.js
+tsconfig.json
+docker-compose.yml
+Dockerfile
+redis.conf
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Build files
+dist/
+coverage/
+.nyc_output/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db 

@@ -1,33 +1,52 @@
-import cluster from "cluster";
-import os from "os";
-import dotenv from "dotenv";
-import app from "./app";
+import app from './app';
+import { PrismaClient } from '@prisma/client';
+import cluster from 'cluster';
+import os from 'os';
 
-dotenv.config();
+const prisma = new PrismaClient();
+const numCPUs = os.cpus().length;
 
-const PORT = process.env.PORT || 4000;
-const SERVER_URL = process.env.SERVER_URL || "http://localhost";
-
-// Check if the current process is the master process
 if (cluster.isPrimary) {
-    console.log(`Master process ${process.pid} is running`);
+  console.log(`Primary ${process.pid} is running`);
 
-    // Get the number of available CPU cores
-    const numCPUs = os.cpus().length;
+  // Fork workers
+  for (let i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
 
-    // Fork workers for each CPU core
-    for (let i = 0; i < numCPUs; i++) {
-        cluster.fork();
-    }
-
-    // Listen for exit events to restart a worker if it dies
-    cluster.on("exit", (worker, code, signal) => {
-        console.error(`Worker ${worker.process.pid} died. Starting a new one...`);
-        cluster.fork();
-    });
+  cluster.on('exit', (worker, code, signal) => {
+    console.log(`Worker ${worker.process.pid} died`);
+    // Replace the dead worker
+    cluster.fork();
+  });
 } else {
-    // Workers can share the same port
-    app.listen(PORT, () => {
-        console.log(`Worker ${process.pid} started at ${SERVER_URL}:${PORT}`);
+  const PORT = process.env.PORT || 3000;
+
+  const server = app.listen(PORT, () => {
+    console.log(`Worker ${process.pid} started on port ${PORT}`);
+  });
+
+  // Handle unhandled promise rejections
+  process.on('unhandledRejection', (err: Error) => {
+    console.log('UNHANDLED REJECTION! 💥 Shutting down...');
+    console.log(err.name, err.message);
+    server.close(() => {
+      process.exit(1);
     });
+  });
+
+  // Handle uncaught exceptions
+  process.on('uncaughtException', (err: Error) => {
+    console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');
+    console.log(err.name, err.message);
+    process.exit(1);
+  });
+
+  // Handle SIGTERM
+  process.on('SIGTERM', () => {
+    console.log('👋 SIGTERM RECEIVED. Shutting down gracefully');
+    server.close(() => {
+      console.log('💥 Process terminated!');
+    });
+  });
 }
