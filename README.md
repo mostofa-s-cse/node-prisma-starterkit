@@ -45,25 +45,25 @@ A modern Node.js API project with Redis caching, optional database support, and 
 ### Using npm
 
 ```bash
-npx nodejs-api-starter
+npx node-prisma-starterkit
 ```
 
 ### Using yarn
 
 ```bash
-yarn create nodejs-api-starter
+yarn create node-prisma-starterkit
 ```
 
 ### Using pnpm
 
 ```bash
-pnpx nodejs-api-starter
+pnpx node-prisma-starterkit
 ```
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/mostofa-s-cse/nodejs-api-starter.git
-cd nodejs-api-starter
+git clone https://github.com/mostofa-s-cse/node-prisma-starterkit.git
+cd node-prisma-starterkit
 ```
 
 2. Install dependencies:

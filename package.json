@@ -1,5 +1,5 @@
 {
-  "name": "nodejs-api-starter",
+  "name": "node-prisma-starterkit",
   "version": "1.0.1",
   "description": "A modern Node.js API project with Redis caching, optional database support, and Docker containerization",
   "main": "dist/app.js",
@@ -25,7 +25,7 @@
     "authentication"
   ],
   "bin": {
-    "nodejs-api-starter": "bin/cli.js"
+    "node-prisma-starterkit": "bin/cli.js"
   },
   "author": "Md Mostofa Shahid , mostofa.s.cse@gmail.com",
   "license": "MIT",
@@ -83,12 +83,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mostofa-s-cse/nodejs-api-starter.git"
+    "url": "git+https://github.com/mostofa-s-cse/node-prisma-starterkit.git"
   },
   "bugs": {
-    "url": "https://github.com/mostofa-s-cse/nodejs-api-starter/issues"
+    "url": "https://github.com/mostofa-s-cse/node-prisma-starterkit/issues"
   },
-  "homepage": "https://github.com/mostofa-s-cse/nodejs-api-starter#readme",
+  "homepage": "https://github.com/mostofa-s-cse/node-prisma-starterkit#readme",
   "files": [
     "src",
     "scripts",
