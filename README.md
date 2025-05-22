@@ -633,6 +633,12 @@ PORT=3000
 # Database Configuration
 DATABASE_URL="mysql://root@localhost:3306/nodejs-db"
 
+# with root password postgresql
+# DATABASE_URL="postgresql://<username>:<password>@<host>:<port>/<database>"
+
+# with root password mysql
+# DATABASE_URL="mysql://<username>:<password>@<host>:<port>/<database>"
+
 # Redis Configuration
 REDIS_HOST=localhost
 REDIS_PORT=6379
