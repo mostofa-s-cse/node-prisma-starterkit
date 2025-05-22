@@ -60,9 +60,8 @@ yarn create node-prisma-starterkit
 pnpx node-prisma-starterkit
 ```
 
-1. Clone the repository:
+1. Open project folder
 ```bash
-git clone https://github.com/mostofa-s-cse/node-prisma-starterkit.git
 cd node-prisma-starterkit
 ```
 
@@ -79,7 +78,12 @@ npm install
 ```bash
 npm run generate-secret
 ```
-5. Start the application:
+
+5. Run the migration
+```bash
+npx prisma migrate dev --name init
+```
+6. Start the application:
 
 Using Docker (recommended):
 ```bash
