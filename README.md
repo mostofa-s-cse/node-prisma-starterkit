@@ -4,15 +4,21 @@ A modern Node.js API project with Redis caching, optional database support, and 
 
 ## Features
 
-- 🚀 Fast and scalable Node.js API
-- 🔄 Redis caching for improved performance
-- 🐳 Docker containerization
-- 📦 Database support (MySQL/PostgreSQL)
-- 🔒 Secure authentication
-- 📝 API documentation
-- 📊 Logging system
-- 🔍 Request caching middleware
-- 📤 File upload support
+✅ Features
+
+- 🚀 Fast and Scalable Node.js API — built with Express.js and optimized for performance.
+- 🔒 Authentication System — secure login with JWT-based access control.
+- 🔁 Forgot & Reset Password — email-based password recovery using secure tokens.
+- 📧 SMTP with Gmail Integration — send transactional emails (e.g., password reset) using Google Mail SMTP.
+- 👤 User, Role & Permission Management — flexible RBAC (Role-Based Access Control) system to manage access and authorization.
+- 📄 Pagination Support — simple and efficient pagination for listing large datasets.
+- 🔄 Redis Caching — cache API responses and frequent queries for improved speed.
+- 🐳 Docker Containerization — easy to deploy and scale in containerized environments.
+- 📦 Database Support — works with MySQL and PostgreSQL using Prisma ORM.
+- 📝 API Documentation — auto-generated Swagger/OpenAPI docs for all routes.
+- 📊 Logging System — request and error logging with support for rotating logs.
+- 🔍 Request Caching Middleware — intelligently caches specific routes to reduce database load.
+- 📤 File Upload Support — handle file uploads with Multer or similar middleware.
 
 ## Technologies Used
 
