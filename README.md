@@ -56,8 +56,8 @@ pnpm add nodejs-api-starter
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd <project-directory>
+git clone https://github.com/mostofa-s-cse/nodejs-api-starter.git
+cd nodejs-api-starter
 ```
 
 2. Install dependencies:
