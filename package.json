@@ -89,9 +89,21 @@
   },
   "homepage": "https://github.com/mostofa-s-cse/nodejs-api-starter#readme",
   "files": [
-    "dist",
+    "src",
+    "scripts",
+    "prisma",
+    "package.json",
+    ".dockerignore",
+    "tsconfig.json",
+    ".env.example",
+    ".gitignore",
+    ".dockerignore",
+    "docker-compose.yml",
+    "redis.conf",
+    "Dockerfile",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "bin"
   ],
   "publishConfig": {
     "access": "public"
