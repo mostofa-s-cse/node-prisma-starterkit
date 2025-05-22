@@ -39,19 +39,19 @@ A modern Node.js API project with Redis caching, optional database support, and 
 ### Using npm
 
 ```bash
-npm install nodejs-api-starter
+npx nodejs-api-starter
 ```
 
 ### Using yarn
 
 ```bash
-yarn add nodejs-api-starter
+yarn create nodejs-api-starter
 ```
 
 ### Using pnpm
 
 ```bash
-pnpm add nodejs-api-starter
+pnpx nodejs-api-starter
 ```
 
 1. Clone the repository:
