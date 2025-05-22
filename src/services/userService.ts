@@ -4,6 +4,9 @@ import fs from 'fs';
 import path from 'path';
 import { logToFile } from '../utils/logger';
 import bcrypt from 'bcryptjs';
+import { Request } from 'express';
+import { simplePaginate } from '../utils/pagination';
+import { User } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -56,35 +59,25 @@ export const createUser = async (data: {
   }
 };
 
-export const getAllUsers = async (page = 1, limit = 10) => {
+export const getAllUsers = async (req: Request) => {
   try {
-    const skip = (page - 1) * limit;
-    
-    const [users, total] = await Promise.all([
-      prisma.user.findMany({
-        skip,
-        take: limit,
-        include: {
-          roles: {
-            include: {
-              permissions: true
-            }
+    const result = await simplePaginate<User>(prisma.user, req, {
+      perPage: 10,
+      include: {
+        roles: {
+          include: {
+            permissions: true
           }
-        },
-        orderBy: {
-          createdAt: 'desc'
         }
-      }),
-      prisma.user.count()
-    ]);
-
-    const usersWithoutPasswords = users.map(({ password, ...user }) => user);
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
 
     return {
-      users: usersWithoutPasswords,
-      total,
-      page,
-      totalPages: Math.ceil(total / limit)
+      ...result,
+      data: result.data
     };
   } catch (error) {
     logToFile('userService', 'Error getting users', error);

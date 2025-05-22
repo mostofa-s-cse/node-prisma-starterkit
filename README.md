@@ -56,8 +56,8 @@ pnpm add nodejs-api-starter
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd <project-directory>
+git clone https://github.com/mostofa-s-cse/nodejs-api-starter.git
+cd nodejs-api-starter
 ```
 
 2. Install dependencies:
@@ -69,7 +69,11 @@ npm install
    - Copy `.env.example` to `.env`
    - Update the environment variables as needed
 
-4. Start the application:
+4. Generate secret key
+```bash
+npm run generate-secret
+```
+5. Start the application:
 
 Using Docker (recommended):
 ```bash
@@ -620,20 +624,50 @@ Create a `.env` file in the root directory with the following variables:
 
 ```env
 # Application
+ALLOWED_ORIGINS="http://localhost:3000,https://yourdomain.com"
+
+# Server Configuration
 NODE_ENV=development
 PORT=3000
 
-# Redis
-REDIS_URL=redis://redis:6379
+# Database Configuration
+DATABASE_URL="mysql://root@localhost:3306/nodejs-db"
 
-# Database (Choose one)
-DATABASE_URL=postgresql://user:password@postgres:5432/dbname
-# or
-DATABASE_URL=mysql://user:password@mysql:3306/dbname
+# with root password postgresql
+# DATABASE_URL="postgresql://<username>:<password>@<host>:<port>/<database>"
 
-# JWT
-JWT_SECRET=your_jwt_secret
-JWT_EXPIRES_IN=24h
+# with root password mysql
+# DATABASE_URL="mysql://<username>:<password>@<host>:<port>/<database>"
+
+# Redis Configuration
+REDIS_HOST=localhost
+REDIS_PORT=6379
+
+# JWT Configuration
+JWT_ACCESS_SECRET="eeec88c117eb96d9a35f35085ac65cf671534aecf6469d856de22cb0aeeb4bcd"
+JWT_REFRESH_SECRET="e5d2dad6b481594d749b87dd273dd54fe5ffe97f67db161a32bd72653c287753"
+JWT_ACCESS_EXPIRATION=15m
+JWT_REFRESH_EXPIRES_IN=7d
+
+# Email Configuration (Gmail Example)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=mostofa.s.cse@gmail.com
+SMTP_PASS=hmshwnqotajpwkgq
+
+
+# Logging
+LOG_LEVEL=debug
+LOG_DIR=logs
+
+# Security
+BCRYPT_SALT_ROUNDS=12
+
+# Google OAuth Configuration
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_CALLBACK_URL=http://localhost:3000/api/v1/auth/google/callback
+
 ```
 
 ## Docker Configuration
@@ -675,98 +709,11 @@ src/
 ├── services/      # Business logic
 ├── utils/         # Utility functions
 └── app.ts         # Application entry point
+└── server.ts      # Application entry point
 ```
 
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## NPM Package Usage
-
-### Configuration Options
-
-The package accepts the following configuration options:
-
-```typescript
-interface Config {
-  port?: number;              // Default: 3000
-  redis?: {
-    url: string;             // Redis connection URL
-    password?: string;       // Redis password
-  };
-  database?: {
-    url: string;             // Database connection URL
-    type?: 'postgresql' | 'mysql'; // Database type
-  };
-  jwt?: {
-    secret: string;          // JWT secret key
-    expiresIn?: string;      // Token expiration time
-  };
-  cors?: {
-    origin?: string | string[]; // CORS origin
-    credentials?: boolean;    // Allow credentials
-  };
-}
-```
-
-### Available Methods
-
-```typescript
-// Start the server
-app.start();
-
-// Stop the server
-app.stop();
-
-// Get Express app instance
-const expressApp = app.getExpressApp();
-
-// Get Redis client
-const redisClient = app.getRedisClient();
-
-// Get Database client
-const dbClient = app.getDatabaseClient();
-```
-
-### Example with Custom Configuration
-
-```typescript
-import { createApp } from 'nodejs-api-starter';
-
-const app = createApp({
-  port: 4000,
-  redis: {
-    url: 'redis://localhost:6379',
-    password: 'your-redis-password'
-  },
-  database: {
-    url: 'postgresql://user:password@localhost:5432/dbname',
-    type: 'postgresql'
-  },
-  jwt: {
-    secret: 'your-secret-key',
-    expiresIn: '7d'
-  },
-  cors: {
-    origin: ['http://localhost:3000', 'https://yourdomain.com'],
-    credentials: true
-  }
-});
-
-// Add custom middleware
-app.getExpressApp().use((req, res, next) => {
-  console.log('Custom middleware');
-  next();
-});
-
-// Start the server
-app.start();
-``` 

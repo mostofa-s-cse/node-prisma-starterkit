@@ -1,13 +1,17 @@
 import { Request, Response, NextFunction } from 'express';
+import { PrismaClient } from '@prisma/client';
 import {
   createUser,
-  getAllUsers,
   getUserById,
   searchUsers,
   updateUser,
   deleteUser,
+  getAllUsers,
 } from '../services/userService';
 import { AppError } from '../middleware/errorHandler';
+import { simplePaginate } from '../utils/pagination';
+
+const prisma = new PrismaClient();
 
 export const createUserController = async (
   req: Request,
@@ -38,14 +42,12 @@ export const getUsers = async (
   next: NextFunction
 ) => {
   try {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
-    
-    const result = await getAllUsers(page, limit);
+    const result = await getAllUsers(req);
     res.status(200).json({
       success: true,
       message: 'Users retrieved successfully',
-      ...result
+      data: result.data,
+      pagination: result.pagination
     });
   } catch (error) {
     next(error);
