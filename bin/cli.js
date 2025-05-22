@@ -5,7 +5,7 @@ const path = require('path');
 
 const projectName = process.argv[2] || 'my-api'; // Default fallback name
 
-const repo = 'https://github.com/mostofa-s-cse/nodejs-api-starter.git';
+const repo = 'https://github.com/mostofa-s-cse/node-prisma-starterkit.git';
 
 try {
   console.log(`Cloning ${repo} into "${projectName}"...`);

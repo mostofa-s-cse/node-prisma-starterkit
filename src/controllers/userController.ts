@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import { PrismaClient } from '@prisma/client';
 import {
   createUser,
   getUserById,
@@ -9,9 +8,7 @@ import {
   getAllUsers,
 } from '../services/userService';
 import { AppError } from '../middleware/errorHandler';
-import { simplePaginate } from '../utils/pagination';
 
-const prisma = new PrismaClient();
 
 export const createUserController = async (
   req: Request,
