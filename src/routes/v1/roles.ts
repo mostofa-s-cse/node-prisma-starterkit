@@ -8,6 +8,11 @@ import {
   assignPermissionsController,
 } from '../../controllers/roleController';
 import { protect } from '../../middleware/auth';
+import { validate } from '../../middleware/validation';
+import {
+  createRoleSchema,
+  updateRoleSchema,
+} from '../../validation/schemas';
 
 const router = express.Router();
 
@@ -18,12 +23,12 @@ router.use(protect);
 // router.use(restrictTo('admin'));
 
 router.route('/')
-  .post(createRoleController)
+  .post(validate(createRoleSchema), createRoleController)
   .get(getRoles);
 
 router.route('/:id')
   .get(getRole)
-  .patch(updateRoleController)
+  .patch(validate(updateRoleSchema), updateRoleController)
   .delete(deleteRoleController);
 
 router.post('/:roleId/permissions', assignPermissionsController);

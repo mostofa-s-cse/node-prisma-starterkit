@@ -8,6 +8,11 @@ import {
   deleteUserController,
 } from '../../controllers/userController';
 import { protect } from '../../middleware/auth';
+import { validate } from '../../middleware/validation';
+import {
+  createUserSchema,
+  updateUserSchema,
+} from '../../validation/schemas';
 import upload from '../../utils/multer';
 
 const router = express.Router();
@@ -25,12 +30,12 @@ router.get('/search', searchUsersController);
 router.get('/', getUsers);
 
 // Create user
-router.post('/',upload.single('profileImage'), createUserController);
+router.post('/', validate(createUserSchema), upload.single('profileImage'), createUserController);
 
 // Get, update, and delete specific user
 router.route('/:id')
   .get(getUser)
-  .patch(upload.single('profileImage'), updateUserController)
+  .patch(validate(updateUserSchema), upload.single('profileImage'), updateUserController)
   .delete(deleteUserController);
 
 export default router; 
