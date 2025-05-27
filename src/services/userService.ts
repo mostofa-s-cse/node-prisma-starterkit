@@ -116,9 +116,8 @@ export const searchUsers = async (query: string, page = 1, limit = 10) => {
     
     const [users, total] = await Promise.all([
       prisma.user.findMany({
-        where: {
+        where: {email: { contains: query },
           OR: [
-            { email: { contains: query } },
             { firstName: { contains: query } },
             { lastName: { contains: query } }
           ]
