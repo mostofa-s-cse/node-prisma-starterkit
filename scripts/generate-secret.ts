@@ -1,8 +1,8 @@
-const crypto = require('crypto');
+import { randomBytes } from 'crypto';
 
 // Generate a secure random string
-const generateSecret = () => {
-  return crypto.randomBytes(32).toString('hex');
+const generateSecret = (): string => {
+  return randomBytes(32).toString('hex');
 };
 
 // Generate both access and refresh secrets

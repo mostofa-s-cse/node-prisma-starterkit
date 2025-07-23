@@ -56,3 +56,23 @@ model RefreshToken {
 
   @@index([userId], map: "RefreshToken_userId_fkey")
 }
+
+model EmailFailure {
+  id          String   @id @default(uuid())
+  jobId       Int      @unique
+  email       String
+  subject     String
+  message     String
+  error       String   @db.Text
+  attempts    Int      @default(0)
+  maxAttempts Int      @default(5)
+  lastAttempt DateTime @default(now())
+  nextRetry   DateTime?
+  isResolved  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([email])
+  @@index([isResolved])
+  @@index([nextRetry])
+}

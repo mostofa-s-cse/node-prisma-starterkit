@@ -10,6 +10,7 @@ A modern Node.js API project with Redis caching, optional database support, and 
 - 🔒 Authentication System — secure login with JWT-based access control.
 - 🔁 Forgot & Reset Password — email-based password recovery using secure tokens.
 - 📧 SMTP with Gmail Integration — send transactional emails (e.g., password reset) using Google Mail SMTP.
+- 📧 **Email Queue with Failure Tracking** — robust email queue system with automatic retry, failure tracking, and monitoring.
 - 👤 User, Role & Permission Management — flexible RBAC (Role-Based Access Control) system to manage access and authorization.
 - 📄 Pagination Support — simple and efficient pagination for listing large datasets.
 - 🔄 Redis Caching — cache API responses and frequent queries for improved speed.
@@ -708,6 +709,14 @@ docker-compose down
 - `npm run test`: Run tests
 - `npm run lint`: Run linter
 
+#### Email Queue Management Scripts
+
+- `npm run email:status`: Show email queue and failure status
+- `npm run email:failures`: List email failures with pagination
+- `npm run email:retry`: Retry all failed emails
+- `npm run email:cleanup`: Clean up resolved failures (default: 30 days)
+- `npm run email:scheduler`: Start automatic retry scheduler (default: 5 minutes)
+
 ### Code Structure
 
 ```
@@ -721,6 +730,178 @@ src/
 └── app.ts         # Application entry point
 └── server.ts      # Application entry point
 ```
+
+## Email Queue System
+
+The project includes a robust email queue system with comprehensive failure tracking and automatic retry capabilities.
+
+### Features
+
+- **Queue Management**: Uses Bull queue with Redis for reliable job processing
+- **Failure Tracking**: All failed emails are tracked in the database with detailed error information
+- **Automatic Retries**: Configurable exponential backoff retry mechanism
+- **Scheduled Retries**: Automatic retry of failed emails at configurable intervals
+- **Monitoring**: Real-time queue status and failure analytics
+- **Manual Retry**: Ability to manually retry specific failed emails
+- **Cleanup**: Automatic cleanup of resolved failures
+
+### Database Schema
+
+The system uses an `EmailFailure` model to track failed emails:
+
+```sql
+model EmailFailure {
+  id          String   @id @default(uuid())
+  jobId       String   @unique
+  email       String
+  subject     String
+  message     String
+  error       String   @db.Text
+  attempts    Int      @default(0)
+  maxAttempts Int      @default(5)
+  lastAttempt DateTime @default(now())
+  nextRetry   DateTime?
+  isResolved  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+```
+
+### API Endpoints
+
+#### Queue Management
+- `GET /api/v1/email/queue-status` - Get queue status and failure counts
+- `GET /api/v1/email/` - Get all queue jobs (requires auth)
+- `GET /api/v1/email/:jobId` - Get specific job details (requires auth)
+
+#### Failure Management
+- `GET /api/v1/email/failures` - Get paginated list of email failures (requires auth)
+- `GET /api/v1/email/failures/:failureId` - Get specific failure details (requires auth)
+
+#### Retry Operations
+- `POST /api/v1/email/failures/:failureId/retry` - Retry specific failed email (requires auth)
+- `POST /api/v1/email/failures/retry-all` - Retry all failed emails (requires auth)
+
+#### Cleanup
+- `DELETE /api/v1/email/failures/cleanup` - Clean up resolved failures (requires auth)
+
+### Usage Examples
+
+#### Sending Emails with Queue
+```typescript
+import { addToEmailQueue } from './services/emailQueue.service';
+
+// Basic email
+await addToEmailQueue({
+  email: 'user@example.com',
+  subject: 'Welcome!',
+  message: 'Welcome to our platform!'
+});
+
+// Email with custom retry configuration
+await addToEmailQueue({
+  email: 'user@example.com',
+  subject: 'Important Update',
+  message: 'Important system update'
+}, {
+  maxAttempts: 10,
+  backoffDelay: 2000,
+  exponentialBackoff: true
+});
+```
+
+#### Monitoring Queue Status
+```typescript
+import { getQueueStatus } from './services/emailQueue.service';
+
+const status = await getQueueStatus();
+console.log('Queue Status:', status);
+// Output:
+// {
+//   waiting: 5,
+//   active: 2,
+//   completed: 150,
+//   failed: 3,
+//   totalFailures: 10,
+//   unresolvedFailures: 7,
+//   pendingRetries: 3
+// }
+```
+
+#### Manual Retry Operations
+```typescript
+import { retryFailedEmail, retryAllFailedEmails } from './services/emailQueue.service';
+
+// Retry specific failure
+await retryFailedEmail('failure-id');
+
+// Retry all failed emails
+const results = await retryAllFailedEmails();
+console.log(`Retried ${results.length} emails`);
+```
+
+### Command Line Management
+
+The project includes a command-line tool for managing the email queue:
+
+```bash
+# Show queue status
+npm run email:status
+
+# List failures with pagination
+npm run email:failures 2 5  # page 2, limit 5
+
+# Retry all failed emails
+npm run email:retry
+
+# Clean up resolved failures older than 7 days
+npm run email:cleanup 7
+
+# Start automatic retry scheduler (every 10 minutes)
+npm run email:scheduler 10
+```
+
+### Configuration
+
+The email queue system can be configured through environment variables:
+
+```env
+# Redis Configuration (for queue)
+REDIS_HOST=localhost
+REDIS_PORT=6379
+
+# SMTP Configuration
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your-app-password
+```
+
+### Automatic Retry Logic
+
+1. **Exponential Backoff**: Failed emails are retried with increasing delays (1s, 2s, 4s, 8s, 16s)
+2. **Maximum Attempts**: Default 5 attempts per email (configurable)
+3. **Scheduled Retries**: Automatic retry every 5 minutes for emails that haven't reached max attempts
+4. **Failure Tracking**: All failures are logged with detailed error information
+5. **Resolution Tracking**: Successful emails mark their failures as resolved
+
+### Monitoring and Alerts
+
+The system provides comprehensive monitoring:
+
+- Real-time queue status
+- Failure rate tracking
+- Retry attempt monitoring
+- Error categorization
+- Performance metrics
+
+### Best Practices
+
+1. **Monitor Queue Health**: Regularly check queue status and failure rates
+2. **Set Appropriate Retry Limits**: Balance between reliability and resource usage
+3. **Clean Up Regularly**: Remove resolved failures to maintain database performance
+4. **Monitor SMTP Limits**: Be aware of your email provider's sending limits
+5. **Use Appropriate Delays**: Set reasonable backoff delays to avoid overwhelming email servers
 
 
 ## License
