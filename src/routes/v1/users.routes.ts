@@ -6,9 +6,9 @@ import {
   searchUsersController,
   updateUserController,
   deleteUserController,
-} from '../../controllers/userController';
-import { protect } from '../../middleware/auth';
-import { validate } from '../../middleware/validation';
+} from '../../controllers/user.controller';
+import { protect } from '../../middleware/auth.middleware';
+import { validate } from '../../middleware/validation.middleware';
 import {
   createUserSchema,
   updateUserSchema,

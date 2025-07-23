@@ -1,6 +1,6 @@
 import express from 'express';
-import { getEmailQueueStatus, getJobInfo, getAllQueueJobs } from '../../controllers/emailController';
-import { protect } from '../../middleware/auth';
+import { getEmailQueueStatus, getJobInfo, getAllQueueJobs } from '../../controllers/email.controller';
+import { protect } from '../../middleware/auth.middleware';
 
 const router = express.Router();
 

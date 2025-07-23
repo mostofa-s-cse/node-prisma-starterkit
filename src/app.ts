@@ -1,8 +1,8 @@
 import express, { Application } from 'express';
 import passport from 'passport';
-import { errorHandler } from './middleware/errorHandler';
-import { configureSecurity, loginLimiter } from './middleware/security';
-import { configureCompression } from './middleware/compression';
+import { errorHandler } from './middleware/errorHandler.middleware';
+import { configureSecurity, loginLimiter } from './middleware/security.middleware';
+import { configureCompression } from './middleware/compression.middleware';
 import v1Routes from './routes/v1';
 import { logToFile } from './utils/logger';
 

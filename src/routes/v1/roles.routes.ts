@@ -6,9 +6,9 @@ import {
   updateRoleController,
   deleteRoleController,
   assignPermissionsController,
-} from '../../controllers/roleController';
-import { protect } from '../../middleware/auth';
-import { validate } from '../../middleware/validation';
+} from '../../controllers/role.controller';
+import { protect } from '../../middleware/auth.middleware';
+import { validate } from '../../middleware/validation.middleware';
 import {
   createRoleSchema,
   updateRoleSchema,

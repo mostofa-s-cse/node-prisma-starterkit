@@ -9,10 +9,19 @@
     "start": "node dist/app.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "test": "jest --passWithNoTests",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:ci": "jest --ci --coverage --watchAll=false",
     "lint": "eslint . --ext .ts",
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run lint",
-    "generate-secret": "node scripts/generate-secret.js"
+    "generate-secret": "node scripts/generate-secret.js",
+    "prisma:generate": "prisma generate",
+    "prisma:reset": "prisma migrate reset && prisma db push",
+    "prisma:push": "prisma db push",
+    "prisma:seed": "ts-node prisma/seed.ts",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio"
   },
   "keywords": [
     "nodejs",

@@ -31,11 +31,9 @@ export const errorHandler = (
     });
   }
 
-  // Programming or other unknown error
   logToFile('errorHandler', 'Unexpected Error', err);
-  return res.status(500).json({
+  return res.status((err as any).statusCode || 500).json({
     success: false,
-    message: 'Something went wrong',
-    status: 'error'
+    message: err.message || 'Something went wrong',
   });
 }; 

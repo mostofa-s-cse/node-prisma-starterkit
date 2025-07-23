@@ -6,8 +6,8 @@ import {
   updateUser,
   deleteUser,
   getAllUsers,
-} from '../services/userService';
-import { AppError } from '../middleware/errorHandler';
+} from '../services/user.service';
+import { AppError } from '../middleware/errorHandler.middleware';
 
 
 export const createUserController = async (

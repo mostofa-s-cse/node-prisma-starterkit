@@ -10,9 +10,9 @@ import {
   getAuthUser,
   forgotPassword,
   resetPassword,
-} from '../../controllers/authController';
-import { protect } from '../../middleware/auth';
-import { validate } from '../../middleware/validation';
+} from '../../controllers/auth.controller';
+import { protect } from '../../middleware/auth.middleware';
+import { validate } from '../../middleware/validation.middleware';
 import {
   registerSchema,
   loginSchema,

@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { AppError } from '../middleware/errorHandler';
+import { AppError } from '../middleware/errorHandler.middleware';
 import fs from 'fs';
 import path from 'path';
 import { logToFile } from '../utils/logger';

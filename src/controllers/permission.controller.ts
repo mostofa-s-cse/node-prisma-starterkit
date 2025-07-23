@@ -5,7 +5,7 @@ import {
   getPermissionById,
   updatePermission,
   deletePermission,
-} from '../services/permissionService';
+} from '../services/permission.service';
 
 export const createPermissionController = async (
   req: Request,

@@ -1,9 +1,10 @@
 import express from 'express';
-import authRoutes from './auth';
-import roleRoutes from './roles';
-import permissionRoutes from './permissions';
-import emailRoutes from './email';
-import userRoutes from './users';
+import authRoutes from './auth.routes';
+import userRoutes from './users.routes';
+import roleRoutes from './roles.routes';
+import permissionRoutes from './permissions.routes';
+import emailRoutes from './email.routes';
+
 const router = express.Router();
 
 router.use('/auth', authRoutes);

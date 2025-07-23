@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { getQueueStatus, getJobDetails, getAllJobs } from '../services/emailQueueService';
+import { getQueueStatus, getJobDetails, getAllJobs } from '../services/emailQueue.service';
 
 export const getEmailQueueStatus = async (
   _: Request,

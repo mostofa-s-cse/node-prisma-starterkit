@@ -6,8 +6,8 @@ import {
   updateRole,
   deleteRole,
   assignPermissionsToRole,
-} from '../services/roleService';
-import { AppError } from '../middleware/errorHandler';
+} from '../services/role.service';
+import { AppError } from '../middleware/errorHandler.middleware';
 
 export const createRoleController = async (
   req: Request,

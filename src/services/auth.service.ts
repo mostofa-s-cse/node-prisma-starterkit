@@ -1,12 +1,10 @@
-import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { AppError } from '../middleware/errorHandler';
+import { AppError } from '../middleware/errorHandler.middleware';
 import { sendEmail } from '../utils/email';
 import { generateOTP } from '../utils/otp';
 import { logToFile } from '../utils/logger';
-
-const prisma = new PrismaClient();
+import { prisma } from '../lib/prisma';
 
 const signTokens = (userId: string) => {
   const accessToken = jwt.sign(

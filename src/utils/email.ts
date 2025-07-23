@@ -1,4 +1,4 @@
-import { addToEmailQueue } from '../services/emailQueueService';
+import { addToEmailQueue } from '../services/emailQueue.service';
 
 interface EmailOptions {
   email: string;

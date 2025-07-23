@@ -8,11 +8,9 @@ import {
   logout as logoutUser,
   forgotPassword as forgotPasswordService,
   resetPassword as resetPasswordService,
-} from '../services/authService';
-import { AppError } from '../middleware/errorHandler';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+} from '../services/auth.service';
+import { AppError } from '../middleware/errorHandler.middleware';
+import { prisma } from '../lib/prisma';
 
 interface PassportUser {
   id?: string;
