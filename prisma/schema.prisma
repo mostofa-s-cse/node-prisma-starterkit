@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -54,12 +54,12 @@ model RefreshToken {
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
 
-  @@index([userId], map: "RefreshToken_userId_fkey")
+  @@index([userId])
 }
 
 model EmailFailure {
   id          String   @id @default(uuid())
-  jobId       Int      @unique
+  jobId       String   @unique
   email       String
   subject     String
   message     String
